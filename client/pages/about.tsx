@@ -9,6 +9,7 @@ export default function AboutPage() {
         <h1>Here, About page.</h1>
         <div className="mt-5">
           `Ruby on Rails` × `Next.js`で作成したチャットアプリです。<br />
+          ルーム機能を実装し、複数のユーザーが同じルームに入室し、チャットできるようにしました。<br />
           <br />
           `Ruby on Rails`はAPIモードを使用し、`Next.js`は`TypeScript`で開発しました。<br />
           転職先の企業で`Ruby on Rails` × `Next.js`を使用するので、その学習用です。<br />
