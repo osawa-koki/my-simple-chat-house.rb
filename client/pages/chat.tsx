@@ -92,7 +92,8 @@ export default function ChatPage() {
       socket.send(JSON.stringify({
         command: 'message',
         identifier: JSON.stringify({
-          channel: 'ChatChannel'
+          channel: 'ChatChannel',
+          room: curr_room,
         }),
         data: JSON.stringify({
           message: {
