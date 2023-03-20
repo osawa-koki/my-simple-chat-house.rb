@@ -16,7 +16,7 @@ function checkStringsNotNullOrEmpty(...params: (string | null)[]): boolean {
   return true;
 }
 
-export default function ContactPage() {
+export default function ChatPage() {
 
   const { sharedData, setSharedData } = React.useContext(DataContext);
   const [message, setMessage] = useState<string>('Hello World!!!');
