@@ -23,6 +23,8 @@ export default function ContactPage() {
   const [socket, setSocket] = useState<WebSocket>();
   const [ready, setReady] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
+  const [curr_room, setCurrRoom] = useState<string | null>(null);
+  const [prev_room, setPrevRoom] = useState<string | null>(null);
 
   useEffect(() => {
     const socket = new WebSocket(setting.wsPath === null ?
@@ -47,10 +49,6 @@ export default function ContactPage() {
     if (socket) {
       socket.onopen = () => {
         setReady(true);
-        socket.send(JSON.stringify({
-          command: 'subscribe',
-          identifier: JSON.stringify({ channel: 'ChatChannel' }),
-        }));
       };
       socket.onmessage = (event) => {
         const data = JSON.parse(event.data);
@@ -121,7 +119,8 @@ export default function ContactPage() {
               }} />
             </Form.Group>
             <Form.Group className="w-50">
-              <Form.Label>Room</Form.Label>
+              <Form.Label>Room ({curr_room || 'None'})
+              </Form.Label>
               <Form.Group className="d-flex justify-content-around align-items-stretch">
                 <Form.Control type="text" placeholder="Enter room" value={sharedData.room} onInput={(e) => {
                   setSharedData({
@@ -131,10 +130,18 @@ export default function ContactPage() {
                 }} />
                 <Button variant="info" className="d-block m-0 text-nowrap" onClick={() => {
                   if (socket) {
+                    if (prev_room) {
+                      socket.send(JSON.stringify({
+                        command: 'unsubscribe',
+                        identifier: JSON.stringify({ channel: 'ChatChannel', room: prev_room }),
+                      }));
+                    }
                     socket.send(JSON.stringify({
                       command: 'subscribe',
                       identifier: JSON.stringify({ channel: 'ChatChannel', room: sharedData.room }),
                     }));
+                    setPrevRoom(curr_room);
+                    setCurrRoom(sharedData.room);
                   }
                 }}>Join 🚪</Button>
               </Form.Group>
