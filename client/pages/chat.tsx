@@ -114,13 +114,12 @@ export default function ContactPage() {
               <Form.Control type="text" placeholder="Enter username" value={sharedData.username} onInput={(e) => {
                 setSharedData({
                   ...sharedData,
-                  username: e.currentTarget.value
+                  username: e.currentTarget.value,
                 });
               }} />
             </Form.Group>
             <Form.Group className="w-50">
-              <Form.Label>Room ({curr_room || 'None'})
-              </Form.Label>
+              <Form.Label>Room ({curr_room || 'None'})</Form.Label>
               <Form.Group className="d-flex justify-content-around align-items-stretch">
                 <Form.Control type="text" placeholder="Enter room" value={sharedData.room} onInput={(e) => {
                   setSharedData({
