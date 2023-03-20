@@ -151,8 +151,15 @@ export default function ChatPage() {
             <Form.Label>Message</Form.Label>
             <Form.Control as="textarea" rows={5} value={message} onInput={(e) => {setMessage(e.currentTarget.value)}}/>
           </Form.Group>
-          <Button variant="primary" className="mt-3 d-block m-auto" onClick={Send} disabled={ready === false || checkStringsNotNullOrEmpty(sharedData.username, message) === false}>Send 📨</Button>
+          <Button variant="primary" className="mt-3 d-block m-auto" onClick={Send} disabled={ready === false || checkStringsNotNullOrEmpty(sharedData.username, message) === false || curr_room === null}>Send 📨</Button>
         </Form>
+        {
+          curr_room === null && (
+            <Alert variant="warning" className="mt-3">
+              Please join a room.
+            </Alert>
+          )
+        }
         {
           checkStringsNotNullOrEmpty(sharedData.username, message) === false && (
             <Alert variant="warning" className="mt-3">
