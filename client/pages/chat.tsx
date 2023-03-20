@@ -16,13 +16,15 @@ function checkStringsNotNullOrEmpty(...params: (string | null)[]): boolean {
   return true;
 }
 
-export default function ContactPage() {
+export default function ChatPage() {
 
   const { sharedData, setSharedData } = React.useContext(DataContext);
   const [message, setMessage] = useState<string>('Hello World!!!');
   const [socket, setSocket] = useState<WebSocket>();
   const [ready, setReady] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
+  const [curr_room, setCurrRoom] = useState<string | null>(null);
+  const [prev_room, setPrevRoom] = useState<string | null>(null);
 
   useEffect(() => {
     const socket = new WebSocket(setting.wsPath === null ?
@@ -47,10 +49,6 @@ export default function ContactPage() {
     if (socket) {
       socket.onopen = () => {
         setReady(true);
-        socket.send(JSON.stringify({
-          command: 'subscribe',
-          identifier: JSON.stringify({ channel: 'ChatChannel' }),
-        }));
       };
       socket.onmessage = (event) => {
         const data = JSON.parse(event.data);
@@ -94,7 +92,8 @@ export default function ContactPage() {
       socket.send(JSON.stringify({
         command: 'message',
         identifier: JSON.stringify({
-          channel: 'ChatChannel'
+          channel: 'ChatChannel',
+          room: curr_room,
         }),
         data: JSON.stringify({
           message: {
@@ -110,21 +109,57 @@ export default function ContactPage() {
     <Layout>
       <div id="Chat">
         <Form>
-          <Form.Group className="mt-3">
-            <Form.Label>Username</Form.Label>
-            <Form.Control type="text" placeholder="Enter username" value={sharedData.username} onInput={(e) => {
-              setSharedData({
-                ...sharedData,
-                username: e.currentTarget.value
-              });
-            }} />
+          <Form.Group className="mt-3 d-flex justify-content-around">
+            <Form.Group className="w-50">
+              <Form.Label>Username</Form.Label>
+              <Form.Control type="text" placeholder="Enter username" value={sharedData.username} onInput={(e) => {
+                setSharedData({
+                  ...sharedData,
+                  username: e.currentTarget.value,
+                });
+              }} />
+            </Form.Group>
+            <Form.Group className="w-50">
+              <Form.Label>Room ({curr_room || 'None'})</Form.Label>
+              <Form.Group className="d-flex justify-content-around align-items-stretch">
+                <Form.Control type="text" placeholder="Enter room" value={sharedData.room} onInput={(e) => {
+                  setSharedData({
+                    ...sharedData,
+                    room: e.currentTarget.value
+                  });
+                }} />
+                <Button variant="info" className="d-block m-0 text-nowrap" onClick={() => {
+                  if (socket) {
+                    if (prev_room) {
+                      socket.send(JSON.stringify({
+                        command: 'unsubscribe',
+                        identifier: JSON.stringify({ channel: 'ChatChannel', room: prev_room }),
+                      }));
+                    }
+                    socket.send(JSON.stringify({
+                      command: 'subscribe',
+                      identifier: JSON.stringify({ channel: 'ChatChannel', room: sharedData.room }),
+                    }));
+                    setPrevRoom(curr_room);
+                    setCurrRoom(sharedData.room);
+                  }
+                }}>Join 🚪</Button>
+              </Form.Group>
+            </Form.Group>
           </Form.Group>
           <Form.Group className="mt-3">
             <Form.Label>Message</Form.Label>
-            <Form.Control type="text" placeholder="Enter message" value={message} onInput={(e) => {setMessage(e.currentTarget.value)}}/>
+            <Form.Control as="textarea" rows={5} value={message} onInput={(e) => {setMessage(e.currentTarget.value)}}/>
           </Form.Group>
-          <Button variant="primary" className="mt-3 d-block m-auto" onClick={Send} disabled={ready === false || checkStringsNotNullOrEmpty(sharedData.username, message) === false}>Send 📨</Button>
+          <Button variant="primary" className="mt-3 d-block m-auto" onClick={Send} disabled={ready === false || checkStringsNotNullOrEmpty(sharedData.username, message) === false || curr_room === null}>Send 📨</Button>
         </Form>
+        {
+          curr_room === null && (
+            <Alert variant="warning" className="mt-3">
+              Please join a room.
+            </Alert>
+          )
+        }
         {
           checkStringsNotNullOrEmpty(sharedData.username, message) === false && (
             <Alert variant="warning" className="mt-3">
