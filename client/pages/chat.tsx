@@ -110,18 +110,39 @@ export default function ContactPage() {
     <Layout>
       <div id="Chat">
         <Form>
-          <Form.Group className="mt-3">
-            <Form.Label>Username</Form.Label>
-            <Form.Control type="text" placeholder="Enter username" value={sharedData.username} onInput={(e) => {
-              setSharedData({
-                ...sharedData,
-                username: e.currentTarget.value
-              });
-            }} />
+          <Form.Group className="mt-3 d-flex justify-content-around">
+            <Form.Group className="w-50">
+              <Form.Label>Username</Form.Label>
+              <Form.Control type="text" placeholder="Enter username" value={sharedData.username} onInput={(e) => {
+                setSharedData({
+                  ...sharedData,
+                  username: e.currentTarget.value
+                });
+              }} />
+            </Form.Group>
+            <Form.Group className="w-50">
+              <Form.Label>Room</Form.Label>
+              <Form.Group className="d-flex justify-content-around align-items-stretch">
+                <Form.Control type="text" placeholder="Enter room" value={sharedData.room} onInput={(e) => {
+                  setSharedData({
+                    ...sharedData,
+                    room: e.currentTarget.value
+                  });
+                }} />
+                <Button variant="info" className="d-block m-0 text-nowrap" onClick={() => {
+                  if (socket) {
+                    socket.send(JSON.stringify({
+                      command: 'subscribe',
+                      identifier: JSON.stringify({ channel: 'ChatChannel', room: sharedData.room }),
+                    }));
+                  }
+                }}>Join 🚪</Button>
+              </Form.Group>
+            </Form.Group>
           </Form.Group>
           <Form.Group className="mt-3">
             <Form.Label>Message</Form.Label>
-            <Form.Control type="text" placeholder="Enter message" value={message} onInput={(e) => {setMessage(e.currentTarget.value)}}/>
+            <Form.Control as="textarea" rows={5} value={message} onInput={(e) => {setMessage(e.currentTarget.value)}}/>
           </Form.Group>
           <Button variant="primary" className="mt-3 d-block m-auto" onClick={Send} disabled={ready === false || checkStringsNotNullOrEmpty(sharedData.username, message) === false}>Send 📨</Button>
         </Form>

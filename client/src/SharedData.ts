@@ -1,5 +1,6 @@
 type SharedData = {
   username: string;
+  room: string;
   messages: Message[];
 };
 
