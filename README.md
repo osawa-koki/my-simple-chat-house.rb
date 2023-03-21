@@ -1,6 +1,6 @@
 # my-simple-chat-house.rb
 
-🐠🐠🐠 `Ruby on Rails` × `Next.js`で作成した簡単なチャットアプリです。  
+🥦🥦🥦 `Ruby on Rails` × `Next.js`で作成した簡単なルーム機能付きチャットアプリです。  
 ルーム機能を実装しているので、複数のユーザーが同じルームでチャットができます。  
 
 ![成果物](./docs/img/fruit.gif)  
